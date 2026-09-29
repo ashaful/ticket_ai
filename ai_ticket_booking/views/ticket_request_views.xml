@@ -1,0 +1,178 @@
+<odoo>
+    <record id="view_ai_ticket_request_list" model="ir.ui.view">
+        <field name="name">ai.ticket.request.list</field>
+        <field name="model">ai.ticket.request</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="state in ('failed','sold_out','no_match')" decoration-warning="state in ('needs_info','human_action','payment_required')" decoration-success="state == 'completed'">
+                <field name="name"/>
+                <field name="priority" widget="priority"/>
+                <field name="provider_id"/>
+                <field name="visit_date"/>
+                <field name="preferred_time"/>
+                <field name="release_at" optional="show"/>
+                <field name="owner_user_id" optional="hide"/>
+                <field name="open_action_count" optional="show"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ai_ticket_request_search" model="ir.ui.view">
+        <field name="name">ai.ticket.request.search</field>
+        <field name="model">ai.ticket.request</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="provider_id"/>
+                <field name="visit_date"/>
+                <field name="owner_user_id"/>
+                <filter name="my_requests" string="My Requests" domain="[('owner_user_id', '=', uid)]"/>
+                <filter name="needs_action" string="Needs Human Action" domain="[('state', 'in', ['human_action','payment_required'])]"/>
+                <filter name="active_booking" string="Active Booking" domain="[('state', 'in', ['preparing','armed','searching','reserving'])]"/>
+                <filter name="waiting_release" string="Waiting Release" domain="[('state', '=', 'waiting_release')]"/>
+                <group>
+                    <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Provider" name="group_provider" context="{'group_by': 'provider_id'}"/>
+                    <filter string="Owner" name="group_owner" context="{'group_by': 'owner_user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_ai_ticket_request_kanban" model="ir.ui.view">
+        <field name="name">ai.ticket.request.kanban</field>
+        <field name="model">ai.ticket.request</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column">
+                <field name="name"/>
+                <field name="provider_id"/>
+                <field name="visit_date"/>
+                <field name="preferred_time"/>
+                <field name="priority"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="fw-bold"><field name="name"/></div>
+                        <div><field name="provider_id"/></div>
+                        <div><field name="visit_date"/> · <field name="preferred_time"/></div>
+                        <div class="mt-2"><field name="priority" widget="priority"/></div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_ai_ticket_request_form" model="ir.ui.view">
+        <field name="name">ai.ticket.request.form</field>
+        <field name="model">ai.ticket.request</field>
+        <field name="arch" type="xml">
+            <form string="AI Ticket Request">
+                <header>
+                    <button name="action_parse_with_ai" type="object" string="Parse with Gemini" class="btn-primary" invisible="state not in ('draft','needs_info','parsed')"/>
+                    <button name="action_validate" type="object" string="Validate Rules" class="btn-primary" invisible="state not in ('parsed','needs_info','validated','failed','sold_out','no_match','cancelled')"/>
+                    <button name="action_dispatch_to_worker" type="object" string="Dispatch to Worker" class="btn-primary" groups="ai_ticket_booking.group_ai_ticket_operator" invisible="state not in ('validated','waiting_release','scheduled','failed','sold_out','no_match')"/>
+                    <button name="action_cancel" type="object" string="Cancel" class="btn-secondary" groups="ai_ticket_booking.group_ai_ticket_operator" invisible="state in ('completed','cancelled')" confirm="Cancel this booking workflow?"/>
+                    <button name="action_reset_to_validated" type="object" string="Reset for Retry" groups="ai_ticket_booking.group_ai_ticket_operator" invisible="state not in ('failed','sold_out','no_match','cancelled')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,needs_info,parsed,validated,waiting_release,scheduled,preparing,armed,searching,reserving,human_action,payment_required,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_actions" type="object" class="oe_stat_button" icon="fa-exclamation-triangle">
+                            <field name="open_action_count" widget="statinfo" string="Open Actions"/>
+                        </button>
+                        <button name="action_view_executions" type="object" class="oe_stat_button" icon="fa-history">
+                            <field name="execution_count" widget="statinfo" string="Executions"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="HUMAN ACTION" bg_color="text-bg-danger" invisible="state != 'human_action'"/>
+                    <widget name="web_ribbon" title="PAYMENT REQUIRED" bg_color="text-bg-warning" invisible="state != 'payment_required'"/>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="owner_user_id"/>
+                            <field name="priority" widget="priority"/>
+                            <field name="provider_id"/>
+                            <field name="visit_date"/>
+                        </group>
+                        <group>
+                            <field name="release_strategy"/>
+                            <field name="release_id" domain="[('provider_id', '=', provider_id)]"/>
+                            <field name="release_at"/>
+                            <field name="provider_timezone"/>
+                            <field name="rules_version" groups="ai_ticket_booking.group_ai_ticket_operator"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="AI Prompt" name="prompt">
+                            <field name="prompt" placeholder="Example: Book 2 adult Vatican tickets for 15 Nov, prefer 10:00, fallback 09:30-11:00, max €70, stop at CAPTCHA or payment."/>
+                            <group invisible="not ai_error">
+                                <field name="ai_error" readonly="True"/>
+                            </group>
+                            <group groups="ai_ticket_booking.group_ai_ticket_operator">
+                                <field name="ai_model_used" readonly="True"/>
+                                <field name="ai_missing_fields" readonly="True"/>
+                                <field name="ai_result_json" readonly="True"/>
+                            </group>
+                        </page>
+                        <page string="Booking Rules" name="rules">
+                            <group>
+                                <group string="Price &amp; Time Window">
+                                    <field name="currency_id"/>
+                                    <field name="max_total_price"/>
+                                    <field name="earliest_time" placeholder="09:00"/>
+                                    <field name="latest_time" placeholder="12:00"/>
+                                </group>
+                                <group string="Human Intervention">
+                                    <field name="stop_on_captcha"/>
+                                    <field name="stop_on_otp"/>
+                                    <field name="stop_on_payment"/>
+                                    <field name="allow_early_availability"/>
+                                </group>
+                            </group>
+                            <separator string="Ticket Quantities"/>
+                            <field name="ticket_line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="category"/>
+                                    <field name="label"/>
+                                    <field name="quantity"/>
+                                </list>
+                            </field>
+                            <separator string="Time Priority"/>
+                            <field name="preference_line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="time_value"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Travelers" name="travelers">
+                            <field name="traveler_line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="traveler_id"/>
+                                    <field name="ticket_category"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Failure" invisible="state not in ('failed','sold_out','no_match')">
+                            <group>
+                                <field name="failure_code" readonly="True"/>
+                                <field name="failure_message" readonly="True"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ai_ticket_requests" model="ir.actions.act_window">
+        <field name="name">Booking Requests</field>
+        <field name="res_model">ai.ticket.request</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_ai_ticket_request_search"/>
+        <field name="context">{'search_default_my_requests': 1}</field>
+    </record>
+</odoo>
