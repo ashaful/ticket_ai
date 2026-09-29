@@ -1,0 +1,13 @@
+<odoo>
+    <menuitem id="menu_ai_ticket_root" name="AI Ticket Booking" sequence="30" groups="ai_ticket_booking.group_ai_ticket_user"/>
+    <menuitem id="menu_ai_ticket_requests" name="Booking Requests" parent="menu_ai_ticket_root" action="action_ai_ticket_requests" sequence="10"/>
+    <menuitem id="menu_ai_ticket_human_actions" name="Human Action Queue" parent="menu_ai_ticket_root" action="action_ai_ticket_human_actions" sequence="20" groups="ai_ticket_booking.group_ai_ticket_operator"/>
+    <menuitem id="menu_ai_ticket_travelers" name="Travelers" parent="menu_ai_ticket_root" action="action_ai_ticket_travelers" sequence="30"/>
+    <menuitem id="menu_ai_ticket_operations" name="Operations" parent="menu_ai_ticket_root" sequence="40" groups="ai_ticket_booking.group_ai_ticket_operator"/>
+    <menuitem id="menu_ai_ticket_releases" name="Release Information" parent="menu_ai_ticket_operations" action="action_ai_ticket_releases" sequence="10"/>
+    <menuitem id="menu_ai_ticket_executions" name="Executions" parent="menu_ai_ticket_operations" action="action_ai_ticket_executions" sequence="20"/>
+    <menuitem id="menu_ai_ticket_logs" name="Execution Logs" parent="menu_ai_ticket_operations" action="action_ai_ticket_logs" sequence="30"/>
+    <menuitem id="menu_ai_ticket_configuration" name="Configuration" parent="menu_ai_ticket_root" sequence="90" groups="ai_ticket_booking.group_ai_ticket_manager"/>
+    <menuitem id="menu_ai_ticket_providers" name="Ticket Providers" parent="menu_ai_ticket_configuration" action="action_ai_ticket_providers" sequence="10"/>
+    <menuitem id="menu_ai_ticket_settings" name="Settings" parent="menu_ai_ticket_configuration" action="action_ai_ticket_settings" sequence="20"/>
+</odoo>
