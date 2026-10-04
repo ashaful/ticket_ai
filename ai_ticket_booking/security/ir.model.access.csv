@@ -1,0 +1,25 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ai_ticket_request_user,ai.ticket.request user,model_ai_ticket_request,group_ai_ticket_user,1,1,1,0
+access_ai_ticket_request_operator,ai.ticket.request operator,model_ai_ticket_request,group_ai_ticket_operator,1,1,1,0
+access_ai_ticket_request_manager,ai.ticket.request manager,model_ai_ticket_request,group_ai_ticket_manager,1,1,1,1
+access_ai_ticket_request_line_user,ai.ticket.request.line user,model_ai_ticket_request_line,group_ai_ticket_user,1,1,1,1
+access_ai_ticket_preference_line_user,ai.ticket.preference.line user,model_ai_ticket_preference_line,group_ai_ticket_user,1,1,1,1
+access_ai_ticket_request_traveler_user,ai.ticket.request.traveler user,model_ai_ticket_request_traveler,group_ai_ticket_user,1,1,1,1
+access_ai_ticket_provider_user,ai.ticket.provider user,model_ai_ticket_provider,group_ai_ticket_user,1,0,0,0
+access_ai_ticket_provider_manager,ai.ticket.provider manager,model_ai_ticket_provider,group_ai_ticket_manager,1,1,1,1
+access_ai_ticket_traveler_user,ai.ticket.traveler user,model_ai_ticket_traveler,group_ai_ticket_user,1,1,1,0
+access_ai_ticket_traveler_operator,ai.ticket.traveler operator,model_ai_ticket_traveler,group_ai_ticket_operator,1,1,1,0
+access_ai_ticket_traveler_manager,ai.ticket.traveler manager,model_ai_ticket_traveler,group_ai_ticket_manager,1,1,1,1
+access_ai_ticket_release_user,ai.ticket.release user,model_ai_ticket_release,group_ai_ticket_user,1,0,0,0
+access_ai_ticket_release_operator,ai.ticket.release operator,model_ai_ticket_release,group_ai_ticket_operator,1,1,1,0
+access_ai_ticket_release_manager,ai.ticket.release manager,model_ai_ticket_release,group_ai_ticket_manager,1,1,1,1
+access_ai_ticket_execution_user,ai.ticket.execution user,model_ai_ticket_execution,group_ai_ticket_user,1,0,0,0
+access_ai_ticket_execution_operator,ai.ticket.execution operator,model_ai_ticket_execution,group_ai_ticket_operator,1,1,1,0
+access_ai_ticket_execution_manager,ai.ticket.execution manager,model_ai_ticket_execution,group_ai_ticket_manager,1,1,1,1
+access_ai_ticket_action_user,ai.ticket.action user,model_ai_ticket_action,group_ai_ticket_user,1,0,0,0
+access_ai_ticket_action_operator,ai.ticket.action operator,model_ai_ticket_action,group_ai_ticket_operator,1,1,1,0
+access_ai_ticket_action_manager,ai.ticket.action manager,model_ai_ticket_action,group_ai_ticket_manager,1,1,1,1
+access_ai_ticket_log_user,ai.ticket.log user,model_ai_ticket_log,group_ai_ticket_user,1,0,0,0
+access_ai_ticket_log_operator,ai.ticket.log operator,model_ai_ticket_log,group_ai_ticket_operator,1,0,0,0
+access_ai_ticket_log_manager,ai.ticket.log manager,model_ai_ticket_log,group_ai_ticket_manager,1,1,1,1
+access_ai_ticket_webhook_event_manager,ai.ticket.webhook.event manager,model_ai_ticket_webhook_event,group_ai_ticket_manager,1,0,0,0
