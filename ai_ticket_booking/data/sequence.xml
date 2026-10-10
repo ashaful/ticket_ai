@@ -1,0 +1,9 @@
+<odoo noupdate="1">
+    <record id="seq_ai_ticket_request" model="ir.sequence">
+        <field name="name">AI Ticket Request</field>
+        <field name="code">ai.ticket.request</field>
+        <field name="prefix">TKT-%(y)s-</field>
+        <field name="padding">6</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

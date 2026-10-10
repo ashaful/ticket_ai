@@ -1,0 +1,77 @@
+<odoo>
+    <record id="res_config_settings_view_form_ai_ticket" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.ai.ticket</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app string="AI Ticket Booking" name="ai_ticket_booking" groups="ai_ticket_booking.group_ai_ticket_manager">
+                    <block title="Gemini AI" help="Gemini is used only to parse natural-language booking requests before execution.">
+                        <setting string="Gemini API Key">
+                            <field name="ai_ticket_gemini_api_key" password="True"/>
+                        </setting>
+                        <setting string="Gemini Model">
+                            <field name="ai_ticket_gemini_model" placeholder="gemini-2.5-flash-lite"/>
+                        </setting>
+                        <setting string="Gemini Timeout">
+                            <field name="ai_ticket_gemini_timeout"/>
+                        </setting>
+                        <setting string="Test Gemini">
+                            <button name="action_ai_ticket_test_gemini" type="object" string="Test Connection" class="btn-secondary"/>
+                        </setting>
+                    </block>
+                    <block title="External Booking Worker" help="The external worker owns exact timing, Playwright/Chromium, provider monitoring and active browser sessions.">
+                        <setting string="Worker Base URL">
+                            <field name="ai_ticket_worker_base_url" placeholder="https://worker.example.com"/>
+                        </setting>
+                        <setting string="Worker API Token">
+                            <field name="ai_ticket_worker_api_token" password="True"/>
+                        </setting>
+                        <setting string="Webhook HMAC Secret">
+                            <field name="ai_ticket_worker_webhook_secret" password="True"/>
+                        </setting>
+                        <setting string="Worker Timeout">
+                            <field name="ai_ticket_worker_timeout"/>
+                        </setting>
+                        <setting string="Test Worker">
+                            <button name="action_ai_ticket_test_worker" type="object" string="Test Connection" class="btn-secondary"/>
+                        </setting>
+                        <setting string="Auto-start on Dispatch" help="When enabled, Queue Booking starts the worker immediately; no VPS start command is needed.">
+                            <field name="ai_ticket_auto_start_on_dispatch"/>
+                        </setting>
+                    </block>
+                    <block title="Human Action Alerts" help="Notify an operator when CAPTCHA, OTP, consent or payment needs manual action.">
+                        <setting string="Alert Channel">
+                            <field name="ai_ticket_notify_channel"/>
+                        </setting>
+                        <setting string="Destination">
+                            <field name="ai_ticket_notify_destination" placeholder="email@example.com or Telegram chat ID"/>
+                        </setting>
+                        <setting string="Telegram Bot Token" invisible="ai_ticket_notify_channel != 'telegram'">
+                            <field name="ai_ticket_telegram_bot_token" password="True"/>
+                        </setting>
+                        <setting string="WhatsApp Access Token" invisible="ai_ticket_notify_channel != 'whatsapp'">
+                            <field name="ai_ticket_whatsapp_access_token" password="True"/>
+                        </setting>
+                        <setting string="WhatsApp Phone Number ID" invisible="ai_ticket_notify_channel != 'whatsapp'">
+                            <field name="ai_ticket_whatsapp_phone_number_id"/>
+                        </setting>
+                    </block>
+                    <block title="Retention">
+                        <setting string="Execution Log Retention">
+                            <field name="ai_ticket_log_retention_days"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_ai_ticket_settings" model="ir.actions.act_window">
+        <field name="name">AI Ticket Booking Settings</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="context">{'module': 'ai_ticket_booking'}</field>
+    </record>
+</odoo>
